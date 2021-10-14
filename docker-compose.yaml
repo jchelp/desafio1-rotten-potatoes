@@ -1,0 +1,48 @@
+version: '3.8'
+volumes:
+  desafio1_mongo_vol:
+  
+networks:
+  desafio1_net:
+    driver: bridge
+
+services:
+  web:
+    image: jchelp/rotten-potatoes:${TAG}
+    build:
+      dockerfile: ./Dockerfile
+      context: ./src 
+    ports:
+    - 5000:5000
+    command: gunicorn -w 3 -b 0.0.0.0:5000 app:app 
+    networks:
+      - desafio1_net
+    depends_on:
+      - mongo
+    environment:
+      MONGODB_DB: admin
+      MONGODB_HOST: mongo
+      MONGODB_PORT: 27017
+      MONGODB_USERNAME: mongouser
+      MONGODB_PASSWORD: mongopwd
+    
+  mongo:
+    image: mongo:4.4.3
+    ports:
+    - 27017:27017
+    networks:
+      - desafio1_net
+    volumes:
+      - desafio1_mongo_vol:/data/db  
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongouser
+      MONGO_INITDB_ROOT_PASSWORD: mongopwd 
+      
+    
+      
+     
+
+
+
+
+     
